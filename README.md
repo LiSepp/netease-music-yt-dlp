@@ -5,21 +5,14 @@
 ## Features
 
 - Download NetEase Cloud Music playlists
-- Convert audio to MP3
-- Embed cover artwork
-- Write metadata for NAS music libraries
+- Convert audio to MP3 and embed cover artwork
+- Write metadata for music library and NAS use
 - Use the playlist name as the MP3 Album field
 - Group files by playlist folder
-- Filename format:
+- Keep filenames stable and identifiable by track ID:
 
 ```
 playlist name/creator - title [id].mp3
-```
-
-Example:
-
-```
-杨又歌 - 过客 [1857317023].mp3
 ```
 
 ## Requirements
@@ -30,87 +23,46 @@ Example:
 
 ## Configuration
 
-Copy `config/yt-dlp.conf` to your yt-dlp configuration directory.
-
-On Windows, yt-dlp can also read an explicit config file such as:
+Copy `config/yt-dlp.conf` to your yt-dlp configuration directory. On Windows, yt-dlp can read an explicit configuration file from a path such as:
 
 ```
-C:/Li_app/yt-dlp/yt-dlp.conf
+C:/path/to/yt-dlp/yt-dlp.conf
 ```
 
-Before use, replace `USERNAME` with your Windows user name.
+Replace the sample output path in the config with a local music-library path. Keep usernames, cookies, account paths, and personal playlist URLs out of this public repository.
 
-The output directory in the sample config is:
+## Metadata
 
-```
-C:/Users/USERNAME/Music/NewDownloads/PLAYLIST_NAME
-```
-
-## Metadata Notes
-
-NetEase Cloud Music may leave the standard `artist` field empty for some songs. This config uses `creator` instead:
+NetEase's extractor may provide `creator` while leaving the standard `artist` field empty. Use `creator` in the output template:
 
 ```
 %(creator|Unknown)s - %(title)s [%(id)s].%(ext)s
 ```
 
-For playlist downloads, the MP3 Album field is set to the playlist name:
+For playlist downloads, set the MP3 `Album` field to the playlist name:
 
 ```
 --parse-metadata "%(playlist_title,album|Unknown)s:%(album)s"
 ```
 
-This keeps albums grouped by NetEase playlist in music library software. If a track is downloaded outside a playlist, yt-dlp falls back to the original album name, then `Unknown`.
+This falls back to the original album for a single-track download, then to `Unknown`. For libraries that split albums by performer, set a consistent `Album Artist` and the compilation tag while retaining each track's real `Artist`.
 
-For Apple Music, iMazing, Apple Watch, and NAS imports, you may also want to rewrite existing MP3 tags as a compilation:
+## Usage
 
-- `Album`: playlist name
-- `Album Artist`: a fixed value such as `NetEase Playlist`
-- `Compilation`: enabled
-
-This prevents one playlist album from being split into many albums by different track artists.
-
-## Usage Examples
+Pass a playlist URL to yt-dlp:
 
 ```
-yt-dlp "PLAYLIST_URL_1"
-yt-dlp "PLAYLIST_URL_2"
-yt-dlp "PLAYLIST_URL_3"
-yt-dlp "PLAYLIST_URL_4"
+yt-dlp "https://music.163.com/#/playlist?id=PLAYLIST_ID"
 ```
 
-Keep real playlist URLs, account paths, and cookie files local. Do not commit them to GitHub.
+The `#/playlist?id=...` form is recognized reliably. Mobile/share routes such as `#/my/m/music/playlist` may be treated as generic webpages; normalize them to the canonical playlist route using the same playlist ID.
+
+## Safe repeat runs and duplicate handling
+
+The sample config uses a playlist-name subfolder, a filename containing the track ID, and `--no-overwrites`. Re-running the same playlist skips files already present at the same path, so it is suitable for resuming or updating a library without downloading those files again. Keep the playlist folder and track ID in the path; a flat template can collide across playlists or cause one playlist's metadata to replace another's.
+
+`--no-overwrites` also means an existing file will not be refreshed if its tags or audio are wrong. To replace a confirmed preview or damaged file, move that file out of the target folder first, then rerun the playlist. Do not delete it until the replacement is checked.
 
 ## Troubleshooting
 
-### artist is NA
-
-NetEase extractor may provide `creator` instead of `artist`.
-
-Use:
-
-```
-%(creator)s - %(title)s
-```
-
-### Wrong filenames
-
-Do not use:
-
-```
---restrict-filenames
-```
-
-It removes Chinese characters. Use:
-
-```
---windows-filenames
-```
-
-### Config encoding error
-
-Save `yt-dlp.conf` as UTF-8.
-
-### Short preview files
-
-Some restricted or unavailable tracks may download as very short files, even with a logged-in account. Scan downloaded MP3 durations, retry once with cookies if you have permission to access the content, and keep persistent preview files outside the main library.
+See [docs/troubleshooting.md](docs/troubleshooting.md) for extractor, network, preview, filename, and metadata issues.
