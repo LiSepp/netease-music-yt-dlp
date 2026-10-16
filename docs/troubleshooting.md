@@ -28,11 +28,28 @@ Use a path with a playlist subfolder and track ID, together with `--no-overwrite
 
 This is path-based: separate playlist folders intentionally allow the same track to exist in more than one playlist. `--no-overwrites` does not repair an existing short, damaged, or incorrectly tagged file. Move only the confirmed bad file to a backup folder before rerunning, and inspect the replacement before removing the backup.
 
+## Export browser cookies for local use
+
+A logged-in browser cookie can let yt-dlp request audio that is available to that account. Only use an account and content you are authorized to access.
+
+1. Sign in to the official NetEase Cloud Music website in your browser.
+2. Use a browser cookie-export extension that can save cookies in Netscape `cookies.txt` format. Export only the NetEase/music site cookies, rather than cookies for every website.
+3. Save the export outside the repository, for example `C:/path/to/private/netease-cookies.txt`. Treat the file like a password: anyone who gets it may be able to use the signed-in session.
+4. Add the local path to your private yt-dlp config:
+
+   ```
+   --cookies "C:/path/to/private/netease-cookies.txt"
+   ```
+
+5. Test with one track that you can access, preferably into a temporary output folder, and check its duration and tags before retrying a whole playlist. Cookies can expire; sign in and export a fresh file if requests stop working.
+
+Never paste cookie contents into chat or logs, commit the cookie file, or include its path if it reveals personal information. Keep it outside the repository even when the repository is private, and add local cookie files to `.gitignore`. Do not publish account identifiers such as `MUSIC_U` values.
+
 ## Very short preview files
 
 A command can complete while restricted, unavailable, or region-limited tracks produce a short preview (often around 30–60 seconds). When authorized to access the track, use a valid browser cookie file stored locally, retry the affected track or playlist, then check duration. One tested preview grew from about 30 seconds to about 199 seconds with a logged-in cookie, and logs showed higher available audio tiers.
 
-Keep cookie files out of Git. Move persistent previews out of the main library rather than deleting them immediately. A successful process exit alone does not prove that every track is complete.
+Move persistent previews out of the main library rather than deleting them immediately. A successful process exit alone does not prove that every track is complete.
 
 ## Proxy connection failures
 
