@@ -12,6 +12,10 @@
 >
 > Cookie 相当于网页登录凭证。只保存在自己的电脑上，绝不要发给别人、贴到聊天里或上传到 GitHub。
 
+![Get cookies.txt LOCALLY 导出步骤示意图](docs/images/cookie-export-guide.svg)
+
+图中是匿名化示意界面；按钮文字以扩展当前版本为准。
+
 1. 在 Chrome 打开[网易云音乐网页版](https://music.163.com/)并登录。
 2. 在当前已登录的网易云页面，打开 Chrome 网上应用店安装 [Get cookies.txt LOCALLY](https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc)。
 3. 安装后点 Chrome 右上角的“拼图”图标，找到扩展 **Get cookies.txt LOCALLY**，点旁边的“图钉”固定到工具栏。之后点工具栏上的扩展图标。
