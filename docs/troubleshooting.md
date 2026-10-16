@@ -2,6 +2,8 @@
 
 先确认问题发生在哪一步，再按对应的小节处理。不要因为一首歌失败就重跑或删除整个曲库。
 
+Cookie 导出界面示意：![匿名化的 Cookie 导出示意图](images/cookie-export-guide.svg)
+
 ## 1. Cookie 怎么获取
 
 ### 使用 Get cookies.txt LOCALLY
