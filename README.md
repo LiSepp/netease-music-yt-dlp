@@ -1,68 +1,68 @@
-# NetEase Music yt-dlp Downloader
+# 网易云音乐 yt-dlp 下载器
 
-使用 yt-dlp 下载网易云音乐歌单并整理本地音乐库。
+使用 yt-dlp 下载网易云音乐歌单，并整理本地音乐库。
 
-## Features
+## 功能
 
-- Download NetEase Cloud Music playlists
-- Convert audio to MP3 and embed cover artwork
-- Write metadata for music library and NAS use
-- Use the playlist name as the MP3 Album field
-- Group files by playlist folder
-- Keep filenames stable and identifiable by track ID:
+- 下载网易云音乐歌单
+- 转换为 MP3 并嵌入封面
+- 写入适合音乐库和 NAS 管理的元数据
+- 将歌单名称写入 MP3 的“专辑”字段
+- 按歌单名称建立目录
+- 文件名包含歌曲 ID，便于识别：
 
 ```
-playlist name/creator - title [id].mp3
+歌单名称/歌手 - 歌名 [歌曲ID].mp3
 ```
 
-## Requirements
+## 环境要求
 
 - Windows
 - yt-dlp
 - FFmpeg
 
-## Configuration
+## 配置
 
-Copy `config/yt-dlp.conf` to your yt-dlp configuration directory. On Windows, yt-dlp can read an explicit configuration file from a path such as:
+将 `config/yt-dlp.conf` 复制到 yt-dlp 配置目录。Windows 下也可以通过指定路径使用配置文件，例如：
 
 ```
 C:/path/to/yt-dlp/yt-dlp.conf
 ```
 
-Replace the sample output path in the config with a local music-library path. Keep usernames, cookies, account paths, and personal playlist URLs out of this public repository.
+使用前，请将示例输出路径替换为本机音乐库目录。用户名、Cookie、账户路径和个人歌单链接不要提交到公开仓库。
 
-## Metadata
+## 元数据说明
 
-NetEase's extractor may provide `creator` while leaving the standard `artist` field empty. Use `creator` in the output template:
+网易云音乐提取器有时会提供 `creator`，但标准的 `artist` 字段为空。因此文件名模板使用 `creator`：
 
 ```
 %(creator|Unknown)s - %(title)s [%(id)s].%(ext)s
 ```
 
-For playlist downloads, set the MP3 `Album` field to the playlist name:
+下载歌单时，将歌单名称写入 MP3 的“专辑”字段：
 
 ```
 --parse-metadata "%(playlist_title,album|Unknown)s:%(album)s"
 ```
 
-This falls back to the original album for a single-track download, then to `Unknown`. For libraries that split albums by performer, set a consistent `Album Artist` and the compilation tag while retaining each track's real `Artist`.
+单曲下载时，如果没有 `playlist_title`，则回退到原专辑名；仍缺失时使用 `Unknown`。如果音乐管理软件按歌手拆分同名专辑，可以统一设置“专辑艺术家”并启用“合辑”标签，同时保留每首歌真实的“歌手”字段。
 
-## Usage
+## 使用方法
 
-Pass a playlist URL to yt-dlp:
+将歌单链接传给 yt-dlp：
 
 ```
 yt-dlp "https://music.163.com/#/playlist?id=PLAYLIST_ID"
 ```
 
-The `#/playlist?id=...` form is recognized reliably. Mobile/share routes such as `#/my/m/music/playlist` may be treated as generic webpages; normalize them to the canonical playlist route using the same playlist ID.
+建议使用标准的 `#/playlist?id=...` 链接。移动端或分享链接中的 `#/my/m/music/playlist` 路由可能被识别为普通网页；可保留相同歌单 ID，并改为标准路由。
 
-## Safe repeat runs and duplicate handling
+## 重复运行与文件去重
 
-The sample config uses a playlist-name subfolder, a filename containing the track ID, and `--no-overwrites`. Re-running the same playlist skips files already present at the same path, so it is suitable for resuming or updating a library without downloading those files again. Keep the playlist folder and track ID in the path; a flat template can collide across playlists or cause one playlist's metadata to replace another's.
+示例配置使用“歌单名称”子目录、包含歌曲 ID 的文件名，以及 `--no-overwrites`。重复下载同一歌单时，目标路径下已存在的文件会跳过，适合续跑或更新本地曲库。请保留歌单目录和歌曲 ID；扁平目录可能造成跨歌单文件冲突，或让一个歌单的元数据覆盖另一个歌单。
 
-`--no-overwrites` also means an existing file will not be refreshed if its tags or audio are wrong. To replace a confirmed preview or damaged file, move that file out of the target folder first, then rerun the playlist. Do not delete it until the replacement is checked.
+`--no-overwrites` 也不会自动修复已有的试听文件、损坏文件或错误标签。要替换已确认有问题的文件，先将它移出目标目录，再重跑歌单；检查替换文件前不要删除备份。
 
-## Troubleshooting
+## 故障排查
 
-See [docs/troubleshooting.md](docs/troubleshooting.md) for extractor, network, preview, filename, and metadata issues.
+提取器、网络、试听文件、文件名和元数据问题，请参阅[故障排查文档](docs/troubleshooting.md)。
